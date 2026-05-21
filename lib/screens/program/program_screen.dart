@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../services/profile_service.dart';
 import '../../theme.dart';
 import '../../config.dart';
 
@@ -42,6 +43,29 @@ class _ProgramScreenState extends State<ProgramScreen> {
     'Rowing Machine', 'Jump Rope', 'Medicine Ball', 'EZ Bar',
     'TRX / Suspension', 'Plyo Box', 'Battle Ropes', 'Foam Roller',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    final p = ProfileService.current;
+    if (p.onboardingComplete) {
+      _selectedGoal = _goals.any((g) => g['label'] == p.goal)
+          ? p.goal
+          : _selectedGoal;
+      _selectedLevel = _normalizeExperience(p.experience);
+      _daysPerWeek = p.daysPerWeek.clamp(1, 7);
+      for (final e in p.equipment) {
+        if (!_selectedEquipment.contains(e)) _selectedEquipment.add(e);
+      }
+    }
+  }
+
+  String _normalizeExperience(String e) {
+    if (e.startsWith('Brand new') || e.startsWith('Beginner')) return 'Beginner';
+    if (e.startsWith('Intermediate')) return 'Intermediate';
+    if (e.startsWith('Advanced')) return 'Advanced';
+    return _selectedLevel;
+  }
 
   @override
   void dispose() {
@@ -226,10 +250,16 @@ class _ProgramScreenState extends State<ProgramScreen> {
         ? 'no equipment (bodyweight only)'
         : _selectedEquipment.join(', ');
 
+    final injuries = ProfileService.current.injuries;
+    final injuryLine = injuries.isEmpty
+        ? ''
+        : 'Work around these injuries (no loaded patterns that aggravate them; substitute safer variants): ${injuries.join(", ")}.\n';
+
     final prompt =
         'You are an expert strength and conditioning coach. '
         'Create a complete $_daysPerWeek-day/week training program.\n'
-        'Goal: $_selectedGoal | Level: $_selectedLevel | Equipment: $equipmentStr\n\n'
+        'Goal: $_selectedGoal | Level: $_selectedLevel | Equipment: $equipmentStr\n'
+        '$injuryLine'
         'Respond with ONLY valid JSON, no markdown code fences, no extra text:\n'
         '{"programTitle":"...","overview":"1-2 sentences","days":['
         '{"dayNumber":1,"focus":"Upper Body Push","isRestDay":false,"exercises":['

@@ -367,3 +367,45 @@ calorie guidance for real-life meals, and micro-escalation to human coaches
   The sequencing logic: form analysis + cheap human escalation monetizes the trust gap immediately (the hardest problem —
   real-time multi-exercise CV accuracy — is deferred). Equipment wayfinding is the moat nobody else has built.
   Intermediates and advanced analytics come only after you've proven retention with beginners.
+
+
+--whats shipped
+  What shipped (Phase 1 MVP, end-to-end)
+
+  Pose detection replacement — lib/services/claude_service.dart:analyzeForm()
+  The old fake Timer.periodic "squat progress" is gone. The new approach captures 3 guided still photos (top → bottom → top) and
+  sends them all to Claude Vision with a structured biomechanics prompt. Claude reasons holistically about depth, bar path, spine,
+   brace, knee tracking, head/neck position — far more sophisticated than (x,y) joint coordinates from ML Kit. It returns a
+  confidence score, form score, the single most-important correction, what went well, watch-outs, and a hard safety flag.
+
+  Onboarding with injury screening — lib/screens/onboarding/onboarding_flow.dart
+  Multi-step PageView: welcome → AI/coach/limits explainer → goal + experience → numeric intake (age/weight/height/days) → PAR-Q
+  safety screening with hard-stop on red flags (chest pain, dizziness, "MD said don't exercise without supervision" → clinician
+  escalation page, app blocks until unchecked) → injury chips for working around → equipment → diet/budget → first-30-min gym
+  orientation (only for brand-new users). Gates the whole app.
+
+  Form analysis — lib/screens/form_check/form_check_screen.dart
+  8 core lifts (Squat, Deadlift/RDL, Bench, OHP, Row, Lat Pulldown, Push-up, Lunge/Split Squat). Camera-angle diagram per lift,
+  "anything bothering you?" pain field, guided 3-photo capture with TTS countdown, Claude analysis, score cards,
+  single-correction-focused result UI. Low confidence or safety flag → human coach upsell becomes prominent.
+
+  Nutrition Decision Coach — lib/screens/nutrition/nutrition_screen.dart
+  Calorie + protein targets derived from Mifflin-St Jeor in UserProfile.estimatedDailyCalories(). Claude generates 3 specific
+  cheap meals daily, respecting dietary preferences. Photo OR text meal logging via ClaudeService.logMeal(). Protein-gap evening
+  alert when behind by 5 PM. Not a tracker — a decision coach.
+
+  Human coach layer — lib/screens/coach/coach_review_screen.dart
+  Submits frames + AI analysis + profile summary + user note to Firestore coach_queue collection with status pending, SLA 24h, $9.
+   Local-fallback messaging on offline. Ticket ID returned to user. Status visible in History → Coach queue tab.
+  
+  Refined program builder — hydrates defaults from saved profile, injects injuries into the prompt so the coach AI substitutes
+  safer variants automatically.
+
+  Wiring — navigation hub gates on profile.onboardingComplete, settings screen lets you redo onboarding, history shows form-score
+  trend strip + coach queue status.
+
+  Explicitly NOT built (per spec): real-time form detection, Olympic lifts, disease-specific nutrition, supplements, monthly coach
+   subscription, social features, Stripe.
+
+  Build: flutter build ios --debug --simulator succeeds. flutter analyze reports 0 errors, 0 warnings in our code (only
+  pre-existing withOpacity deprecation infos).

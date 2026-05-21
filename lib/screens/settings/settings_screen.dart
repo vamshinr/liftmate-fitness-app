@@ -1,125 +1,119 @@
 import 'package:flutter/material.dart';
+import '../../services/profile_service.dart';
 import '../../theme.dart';
-import '../../config.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  String _maskApiKey(String key) {
-    if (key.length <= 15) return key;
-    return "${key.substring(0, 14)}..."
-        "${key.substring(key.length - 12)}";
-  }
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final p = ProfileService.current;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Settings"),
-      ),
-      body: SingleChildScrollView(
+      appBar: AppBar(title: const Text('Settings')),
+      body: ListView(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // API Key section
-            Text(
-              "Model Integration",
-              style: textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "LiftMate comes with native, built-in access to Anthropic Claude. Your nutrition advice, program generation, and chat responses are processed securely using our dedicated models.",
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13, height: 1.4),
-            ),
-            const SizedBox(height: 20),
-            // Integrated Key Info Box
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppTheme.cardBg,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppTheme.neonLime.withOpacity(0.15)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: const [
-                      Icon(Icons.vpn_key, color: AppTheme.neonLime, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        "CLAUDE INTEGRATION ACTIVE",
-                        style: TextStyle(
-                          color: AppTheme.neonLime,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    _maskApiKey(claudeApiKey),
-                    style: const TextStyle(
-                      fontFamily: "Courier",
-                      color: AppTheme.textPrimary,
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    "Token Tier: Claude 3.5 Sonnet (Production)",
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
-            // App Information
-            Text(
-              "System Diagnostics",
-              style: textTheme.titleLarge,
-            ),
-            const SizedBox(height: 12),
-            _buildSystemRow("Firebase Link", "CONNECTED (liftmate-17fb6)", AppTheme.neonLime),
-            _buildSystemRow("Pose Engine", "Vision Framework Local v2.0", AppTheme.textPrimary),
-            _buildSystemRow("GTM Platform", "Flutter + iOS SDK 19.0", AppTheme.textPrimary),
-            _buildSystemRow("Local Database", "SharedPreferences + Cache", AppTheme.textPrimary),
-            const SizedBox(height: 40),
-            // Reset / Sign Out Info
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.02),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withOpacity(0.04)),
-              ),
-              child: const Text(
-                "You are currently running the developer build of LiftMate Fitness App. All analytics and logs are synchronized with Firebase Console for debugging.",
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 12, height: 1.4),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSystemRow(String key, String value, [Color valueColor = AppTheme.textSecondary]) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(key, style: const TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.w500)),
-          Text(value, style: TextStyle(color: valueColor, fontWeight: FontWeight.bold)),
+          Text('Your profile', style: textTheme.titleLarge),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.cardBg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white12),
+            ),
+            child: Column(
+              children: [
+                _row('Goal', p.goal),
+                _row('Experience', p.experience),
+                _row('Days/week', '${p.daysPerWeek}'),
+                _row('Equipment',
+                    p.equipment.isEmpty ? 'Bodyweight' : p.equipment.join(', ')),
+                _row('Injuries',
+                    p.injuries.isEmpty ? 'None reported' : p.injuries.join(', ')),
+                _row('Diet', p.dietaryPreference),
+                _row('Cleared for exercise',
+                    p.clearedForExercise ? 'Yes' : 'Needs clinician sign-off'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppTheme.neonLime,
+              side: const BorderSide(color: AppTheme.neonLime),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            onPressed: () async {
+              final ok = await showDialog<bool>(
+                context: context,
+                builder: (_) => AlertDialog(
+                  backgroundColor: AppTheme.cardBg,
+                  title: const Text('Redo onboarding?',
+                      style: TextStyle(color: AppTheme.textPrimary)),
+                  content: const Text(
+                    'This clears your saved profile and restarts the welcome flow. Your form check history is not affected.',
+                    style: TextStyle(color: AppTheme.textSecondary),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Cancel')),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.neonLime,
+                        foregroundColor: AppTheme.darkBackground,
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Reset'),
+                    ),
+                  ],
+                ),
+              );
+              if (ok == true) {
+                await ProfileService.clear();
+                if (context.mounted) {
+                  Navigator.popUntil(context, (r) => r.isFirst);
+                }
+              }
+            },
+            icon: const Icon(Icons.refresh),
+            label: const Text('Redo onboarding'),
+          ),
+          const SizedBox(height: 28),
+          Text('About', style: textTheme.titleLarge),
+          const SizedBox(height: 12),
+          const Text(
+            'LiftMate analyzes your form using Claude\'s vision model — not landmark-based pose detection. The model reasons about depth, bar path, brace, and spine angle holistically. When confidence is limited, a vetted human coach can review for \$9.',
+            style: TextStyle(
+                color: AppTheme.textSecondary, fontSize: 13, height: 1.4),
+          ),
         ],
       ),
     );
   }
+
+  Widget _row(String k, String v) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 120,
+              child: Text(k,
+                  style: const TextStyle(
+                      color: AppTheme.textSecondary, fontSize: 13)),
+            ),
+            Expanded(
+              child: Text(v,
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.right),
+            ),
+          ],
+        ),
+      );
 }
