@@ -1,0 +1,52 @@
+  What was done
+
+  Research (r/cofounderhunt + startup research)
+
+  Since Reddit blocks direct access, I pulled from the broader startup research
+  ecosystem. The top underserved niche ideas for 2026 fitness apps:
+  - AI-generated training blocks (not just tracking) — biggest whitespace vs incumbents
+  - Equipment-aware programming — programs based on what you actually own/have access
+  to
+  - Budget athlete nutrition — already in app, genuinely underserved
+  - Gym machine scanner for beginners — addresses gym anxiety/intimidation (already in
+  app)
+  - Plateau detection — AI that tells you when you've stalled and why
+
+  New feature built: AI Program Builder (tab 4 — "Program")
+
+  lib/screens/program/program_screen.dart — full Claude API integration:
+  - User selects: Goal (Muscle/Strength/Fat Loss/Fitness), Level
+  (Beginner/Intermediate/Advanced), Days/week (2–6 stepper), Equipment (Full Gym/Home
+  Gym/Bodyweight)
+  - Calls claude-sonnet-4-6 → generates a complete periodized training block
+  - Result is selectable text (user can copy it) and saved to Firestore automatically
+  - "Rebuild" button to regenerate
+  
+  Navigation updated
+
+  5 tabs: AI Coach → Gym Scan → Nutrition → Program → History
+  Settings moved to a gear icon in the AI Coach AppBar (clean, not buried)
+
+  Cleanup
+
+  - LiftMate.xcodeproj (standalone root Xcode project) — deleted
+  - Flutter's ios/ folder kept (needed for iOS builds)
+
+  Renamed
+
+  Fitness-app → liftmate-fitness-app ✓
+
+  Bug fixed
+
+  http: ^1.2.0 added to pubspec.yaml (needed for Claude API calls)
+  intl was already present — confirmed working
+
+  flutter analyze: No issues found.
+
+  Sources:
+  - Top Fitness App Ideas Startups Should Build
+  - 7 Fitness App Ideas Booming in 2026
+  - Top 100 Fitness Startups to Watch in 2026
+  - Top AI Fitness Apps 2026
+
+✻ Worked for 8m 28s
