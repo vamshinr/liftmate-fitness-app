@@ -1,20 +1,43 @@
-# Xcode
+# Flutter / Dart build artifacts
+.dart_tool/
 build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+.packages
+.pub-cache/
+.pub/
+
+# macOS platform (iOS-only project)
+macos/
+
+# IDE files
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# Xcode
 DerivedData/
-*.xcodeproj/
-!*.xcodeproj/project.pbxproj
 *.xcworkspace/
 xcuserdata/
 *.xcuserstate
-
-# macOS
-.DS_Store
 
 # Swift Package Manager
 .swiftpm/
 .build/
 Package.resolved
 
-# Secrets
+# macOS system
+.DS_Store
+**/.DS_Store
+
+# Secrets (never commit these)
+.env
 *.env
 secrets.plist
+GoogleService-Info.plist
+
+# Personal notes
+thoughts.txt

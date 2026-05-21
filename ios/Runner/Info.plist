@@ -67,8 +67,12 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>This app requires camera access to analyze your posture and count reps in real-time.</string>
+	<string>This app requires camera access to analyze your posture, count reps, and scan gym equipment.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>LiftMate uses your photo library to scan gym equipment and auto-detect what's available.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This app requires microphone access for optional audio cue features during workouts.</string>
+	<string>LiftMate uses the microphone so you can ask your AI coach questions by voice.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>LiftMate uses speech recognition to understand your voice questions about gym equipment.</string>
 </dict>
 </plist>

@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 import 'theme.dart';
 import 'screens/navigation_hub.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase using the generated firebase_options.dart
+
+  await dotenv.load(fileName: '.env');
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
-    debugPrint("Firebase initialization failed: $e. Running in offline fallback mode.");
+    debugPrint('Firebase initialization failed: $e. Running in offline fallback mode.');
   }
 
   runApp(const LiftMateApp());
