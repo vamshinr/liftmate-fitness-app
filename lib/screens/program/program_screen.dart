@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../services/ai_coach_service.dart';
 import '../../services/profile_service.dart';
 import '../../theme.dart';
-import '../../config.dart';
+import '../../widgets/nutrition_section.dart';
+import '../../widgets/trainer_network_card.dart';
+import '../trainers/trainer_network_screen.dart';
 
 class ProgramScreen extends StatefulWidget {
   const ProgramScreen({super.key});
@@ -174,63 +176,27 @@ class _ProgramScreenState extends State<ProgramScreen> {
 
     try {
       final bytes = await image.readAsBytes();
-      final b64 = base64Encode(bytes);
       final ext = image.path.split('.').last.toLowerCase();
       final mime = ext == 'png' ? 'image/png' : 'image/jpeg';
 
-      final response = await http.post(
-        Uri.parse('https://api.anthropic.com/v1/messages'),
-        headers: {
-          'x-api-key': claudeApiKey,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-        },
-        body: jsonEncode({
-          'model': claudeModel,
-          'max_tokens': 300,
-          'messages': [
-            {
-              'role': 'user',
-              'content': [
-                {
-                  'type': 'image',
-                  'source': {'type': 'base64', 'media_type': mime, 'data': b64},
-                },
-                {
-                  'type': 'text',
-                  'text':
-                      'List the gym/fitness equipment visible in this image. '
-                      'Return ONLY a JSON array of short names like ["Barbell","Bench","Cable Machine"]. '
-                      'No other text.',
-                },
-              ],
-            },
-          ],
-        }),
+      final found = await AICoachService.identifyEquipmentFromPhoto(
+        bytes,
+        mimeType: mime,
       );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
-        final text = (data['content'] as List).first['text'] as String;
-        final match = RegExp(r'\[.*?\]', dotAll: true).firstMatch(text);
-        if (match != null) {
-          final found = (jsonDecode(match.group(0)!) as List).cast<String>();
-          setState(() {
-            for (final item in found) {
-              if (!_selectedEquipment.contains(item)) _selectedEquipment.add(item);
-            }
-          });
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                'Detected ${found.length} equipment item${found.length == 1 ? '' : 's'}',
-              ),
-              backgroundColor: AppTheme.cardBg,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ));
-          }
+      setState(() {
+        for (final item in found) {
+          if (!_selectedEquipment.contains(item)) _selectedEquipment.add(item);
         }
+      });
+      if (mounted && found.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            'Detected ${found.length} equipment item${found.length == 1 ? '' : 's'}',
+          ),
+          backgroundColor: AppTheme.cardBg,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ));
       }
     } catch (e) {
       debugPrint('Equipment scan error: $e');
@@ -246,75 +212,19 @@ class _ProgramScreenState extends State<ProgramScreen> {
       _errorMessage = null;
     });
 
-    final equipmentStr = _selectedEquipment.isEmpty
-        ? 'no equipment (bodyweight only)'
-        : _selectedEquipment.join(', ');
-
-    final injuries = ProfileService.current.injuries;
-    final injuryLine = injuries.isEmpty
-        ? ''
-        : 'Work around these injuries (no loaded patterns that aggravate them; substitute safer variants): ${injuries.join(", ")}.\n';
-
-    final prompt =
-        'You are an expert strength and conditioning coach. '
-        'Create a complete $_daysPerWeek-day/week training program.\n'
-        'Goal: $_selectedGoal | Level: $_selectedLevel | Equipment: $equipmentStr\n'
-        '$injuryLine'
-        'Respond with ONLY valid JSON, no markdown code fences, no extra text:\n'
-        '{"programTitle":"...","overview":"1-2 sentences","days":['
-        '{"dayNumber":1,"focus":"Upper Body Push","isRestDay":false,"exercises":['
-        '{"name":"Bench Press","sets":4,"reps":"6-8","formCue":"Retract shoulder blades"}]}],'
-        '"coachingNotes":["note1","note2","note3"]}\n\n'
-        'Include all $_daysPerWeek training days. Fill the remaining days of a 7-day week as rest days '
-        '(isRestDay:true, exercises:[]). Include 4-6 exercises per training day.';
-
     try {
-      final response = await http.post(
-        Uri.parse('https://api.anthropic.com/v1/messages'),
-        headers: {
-          'x-api-key': claudeApiKey,
-          'anthropic-version': '2023-06-01',
-          'content-type': 'application/json',
-        },
-        body: jsonEncode({
-          'model': claudeModel,
-          'max_tokens': 3000,
-          'messages': [
-            {'role': 'user', 'content': prompt},
-          ],
-        }),
+      final parsed = await AICoachService.generateProgramFromInputs(
+        goal: _selectedGoal,
+        level: _selectedLevel,
+        daysPerWeek: _daysPerWeek,
+        equipment: _selectedEquipment,
+        injuries: ProfileService.current.injuries,
       );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
-        final text = (data['content'] as List).first['text'] as String;
-        final jsonMatch = RegExp(r'\{[\s\S]*\}').firstMatch(text);
-        if (jsonMatch != null) {
-          try {
-            final parsed = jsonDecode(jsonMatch.group(0)!) as Map<String, dynamic>;
-            setState(() {
-              _parsedProgram = parsed;
-              _isGenerating = false;
-            });
-            _saveProgramToFirebase(parsed);
-          } catch (_) {
-            setState(() {
-              _parsedProgram = {'_raw': text};
-              _isGenerating = false;
-            });
-          }
-        } else {
-          setState(() {
-            _parsedProgram = {'_raw': text};
-            _isGenerating = false;
-          });
-        }
-      } else {
-        setState(() {
-          _errorMessage = 'API error ${response.statusCode}. Check your key.';
-          _isGenerating = false;
-        });
-      }
+      setState(() {
+        _parsedProgram = parsed;
+        _isGenerating = false;
+      });
+      if (!parsed.containsKey('_raw')) _saveProgramToFirebase(parsed);
     } catch (e) {
       setState(() {
         _errorMessage = 'Connection failed: $e';
@@ -395,7 +305,7 @@ class _ProgramScreenState extends State<ProgramScreen> {
                   Icon(Icons.auto_awesome, color: AppTheme.neonLime, size: 16),
                   SizedBox(width: 8),
                   Text(
-                    'POWERED BY CLAUDE AI',
+                    'AI-GENERATED PROGRAM',
                     style: TextStyle(
                       color: AppTheme.neonLime,
                       fontSize: 11,
@@ -591,7 +501,7 @@ class _ProgramScreenState extends State<ProgramScreen> {
                     ),
                     SizedBox(width: 12),
                     Text(
-                      'Claude is building your program...',
+                      'Building your program...',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ])
@@ -599,6 +509,18 @@ class _ProgramScreenState extends State<ProgramScreen> {
                     'GENERATE MY PROGRAM',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
+          ),
+          const SizedBox(height: 28),
+          const NutritionSection(),
+          const SizedBox(height: 16),
+          TrainerNetworkCard(
+            title: 'Want 1:1 from a real coach?',
+            description:
+                'When you want a human eye on your form, technique, or programming, a vetted coach reviews in under 24 hours.',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TrainerNetworkScreen()),
+            ),
           ),
           const SizedBox(height: 24),
         ],
@@ -887,13 +809,25 @@ class _ProgramScreenState extends State<ProgramScreen> {
         // Scrollable day cards + coaching notes
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
             children: [
               ...days.map(_buildDayCard),
               if (notes.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 _buildCoachingNotesCard(notes),
               ],
+              const SizedBox(height: 18),
+              const NutritionSection(),
+              const SizedBox(height: 16),
+              TrainerNetworkCard(
+                title: 'Want a coach to look at your program?',
+                description:
+                    'A vetted coach reviews your generated plan and gives one concrete tweak — for when AI alone isn\'t enough.',
+                onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TrainerNetworkScreen()),
+            ),
+              ),
             ],
           ),
         ),

@@ -1,4 +1,4 @@
-platform :ios, '15.0'
+platform :ios, '15.5'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -38,5 +38,35 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    # Google ML Kit pods don't ship arm64 slices for the iOS simulator yet, so
+    # builds for Apple Silicon iOS 26+ simulators fail on linking. Exclude
+    # arm64 from the simulator slice for the affected pods so the app still
+    # builds on Apple Silicon Macs. Physical-device builds are unaffected.
+    mlkit_pods = %w[
+      GoogleMLKit
+      MLKitCommon
+      MLKitVision
+      MLKitXenoCommon
+      MLImage
+      MLKitPoseDetection
+      MLKitPoseDetectionCommon
+      MLKitPoseDetectionAccurate
+    ]
+    if mlkit_pods.include?(target.name) || target.name.start_with?('MLKit')
+      target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      end
+    end
+
+    target.build_configurations.each do |config|
+      # Match the platform iOS version the Flutter template now expects so
+      # CocoaPods doesn't emit deployment-target warnings for every pod.
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
+    end
   end
+
+  # The pod-level EXCLUDED_ARCHS[sdk=iphonesimulator*] is propagated to the
+  # Runner via xcconfig inheritance — no need to override at the Runner
+  # target. Avoiding the override sidesteps CocoaPods' "$(inherited)" warning.
 end

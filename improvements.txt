@@ -1,0 +1,10 @@
+-gym scan page - respond with good set of pictures or a sample video on how to do it not just explaination
+-is it possible to pull all the data like lyfta had?
+-may be just keep nutrition as a small section inside Program page. (Nutrition should not show what to eat alreeady, first get some inputs from users and 
+then recommend or adjust based on that.)
+-form check is complete waste. I clearly told - the goal is to actively monitor via video(supoort front and back camera) and actively suggest form correction.
+-Add an AI chatbot who can always maintain your activity history and stuff so it can answer contextfully like RAG basically
+- Also highlight trainer network idea we had.
+- Also add a profile section
+- scan section there is no capture button
+- reset onboarding is not working

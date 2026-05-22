@@ -1,3 +1,85 @@
+class CorrectiveDrill {
+  final String name;
+  final String howTo;
+  final String dose;
+
+  const CorrectiveDrill({
+    required this.name,
+    required this.howTo,
+    required this.dose,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'howTo': howTo,
+        'dose': dose,
+      };
+
+  factory CorrectiveDrill.fromJson(Map<String, dynamic> j) => CorrectiveDrill(
+        name: j['name'] as String? ?? '',
+        howTo: j['howTo'] as String? ?? '',
+        dose: j['dose'] as String? ?? '',
+      );
+}
+
+class ConfidenceBreakdown {
+  final int visibility;
+  final int angle;
+  final int lighting;
+  final int framing;
+
+  const ConfidenceBreakdown({
+    required this.visibility,
+    required this.angle,
+    required this.lighting,
+    required this.framing,
+  });
+
+  int get overall {
+    final scores = [visibility, angle, lighting, framing];
+    return scores.reduce((a, b) => a + b) ~/ scores.length;
+  }
+
+  Map<String, dynamic> toJson() => {
+        'visibility': visibility,
+        'angle': angle,
+        'lighting': lighting,
+        'framing': framing,
+      };
+
+  factory ConfidenceBreakdown.fromJson(Map<String, dynamic> j) =>
+      ConfidenceBreakdown(
+        visibility: (j['visibility'] as num?)?.toInt() ?? 0,
+        angle: (j['angle'] as num?)?.toInt() ?? 0,
+        lighting: (j['lighting'] as num?)?.toInt() ?? 0,
+        framing: (j['framing'] as num?)?.toInt() ?? 0,
+      );
+}
+
+class RubricScore {
+  final String key;
+  final String name;
+  final int score;
+
+  const RubricScore({
+    required this.key,
+    required this.name,
+    required this.score,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'key': key,
+        'name': name,
+        'score': score,
+      };
+
+  factory RubricScore.fromJson(Map<String, dynamic> j) => RubricScore(
+        key: j['key'] as String? ?? '',
+        name: j['name'] as String? ?? '',
+        score: (j['score'] as num?)?.toInt() ?? 0,
+      );
+}
+
 class FormCheckResult {
   final String lift;
   final int confidence; // 0-100; below threshold → suggest human review
@@ -8,6 +90,10 @@ class FormCheckResult {
   final bool safetyFlag;
   final String safetyReason;
   final DateTime timestamp;
+  final List<CorrectiveDrill> drills;
+  final ConfidenceBreakdown? confidenceBreakdown;
+  final List<RubricScore> rubric;
+  final String coachingCue;
 
   const FormCheckResult({
     required this.lift,
@@ -19,6 +105,10 @@ class FormCheckResult {
     required this.safetyFlag,
     required this.safetyReason,
     required this.timestamp,
+    this.drills = const [],
+    this.confidenceBreakdown,
+    this.rubric = const [],
+    this.coachingCue = '',
   });
 
   bool get lowConfidence => confidence < 60;
@@ -33,6 +123,10 @@ class FormCheckResult {
         'safetyFlag': safetyFlag,
         'safetyReason': safetyReason,
         'timestamp': timestamp.toIso8601String(),
+        'drills': drills.map((d) => d.toJson()).toList(),
+        'confidenceBreakdown': confidenceBreakdown?.toJson(),
+        'rubric': rubric.map((r) => r.toJson()).toList(),
+        'coachingCue': coachingCue,
       };
 
   factory FormCheckResult.fromJson(Map<String, dynamic> j) => FormCheckResult(
@@ -46,6 +140,19 @@ class FormCheckResult {
         safetyReason: j['safetyReason'] as String? ?? '',
         timestamp: DateTime.tryParse(j['timestamp'] as String? ?? '') ??
             DateTime.now(),
+        drills: (j['drills'] as List?)
+                ?.map((e) => CorrectiveDrill.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            const [],
+        confidenceBreakdown: j['confidenceBreakdown'] == null
+            ? null
+            : ConfidenceBreakdown.fromJson(
+                j['confidenceBreakdown'] as Map<String, dynamic>),
+        rubric: (j['rubric'] as List?)
+                ?.map((e) => RubricScore.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            const [],
+        coachingCue: j['coachingCue'] as String? ?? '',
       );
 }
 

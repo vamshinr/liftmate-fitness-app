@@ -153,6 +153,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
         _equipmentPage(),
         _nutritionContextPage(),
         if (_profile.experience == 'Brand new — first month') _gymOrientationPage(),
+        _warmupPage(),
       ];
 
   @override
@@ -537,6 +538,111 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
               options: _diets,
               onChanged: (v) => setState(() => _profile =
                   _profile.copyWith(dietaryPreference: v ?? 'No restrictions')),
+            ),
+          ],
+        ),
+      );
+
+  Widget _warmupPage() => _Page(
+        title: 'Warm up — every single session',
+        subtitle:
+            'The #1 thing beginners skip and regret. 5 minutes saves you weeks of injury setbacks.',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(14),
+              margin: const EdgeInsets.only(top: 8, bottom: 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppTheme.neonLime.withValues(alpha: 0.14),
+                    AppTheme.neonCyan.withValues(alpha: 0.06),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                border: Border.all(
+                    color: AppTheme.neonLime.withValues(alpha: 0.45)),
+              ),
+              child: const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.local_fire_department_rounded,
+                      color: AppTheme.neonLime, size: 22),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Cold muscles tear, warm muscles grow. Warming up raises tissue temp, primes your nervous system, and surfaces niggles before you load them.',
+                      style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 13.5,
+                          height: 1.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Text(
+              'The 5-minute recipe',
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const _NumberedTip(
+                n: 1,
+                title: '2 min light cardio',
+                body:
+                    'Easy bike, rower, or brisk walk on a treadmill. Goal: light sweat, not winded.'),
+            const _NumberedTip(
+                n: 2,
+                title: '5 dynamic mobility moves',
+                body:
+                    'Leg swings, hip openers, arm circles, cat-cow, ankle rocks. 10 reps each. No static stretching before lifting.'),
+            const _NumberedTip(
+                n: 3,
+                title: '2–3 ramp-up sets',
+                body:
+                    'Before your working sets, do the same lift with just the bar, then 50%, then 75% of your working weight. Grease the groove.'),
+            const _NumberedTip(
+                n: 4,
+                title: 'Skip the static stretches',
+                body:
+                    'Long holds (>30 s) before lifting actually reduce strength. Save deep stretching for after the session or rest days.'),
+            const _NumberedTip(
+                n: 5,
+                title: 'If something pinches, stop',
+                body:
+                    'Pain in the line of the lift = a red flag, not soreness. Adjust the move, drop the weight, or skip it. Never train through pain.'),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.cardBg,
+                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                border: Border.all(color: AppTheme.hairline),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.tips_and_updates_outlined,
+                      color: AppTheme.neonCyan, size: 18),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Cool-down is optional. A 2-minute slow walk + a few static stretches afterwards helps recovery.',
+                      style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12.5,
+                          height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../theme.dart';
-import '../../services/claude_service.dart';
+import '../../services/ai_coach_service.dart';
+import '../../widgets/trainer_network_card.dart';
+import '../trainers/trainer_network_screen.dart';
 
 class WayfindingScreen extends StatefulWidget {
   const WayfindingScreen({super.key});
@@ -55,7 +58,7 @@ class _WayfindingScreenState extends State<WayfindingScreen> {
     try {
       final file = await _camera!.takePicture();
       final bytes = await file.readAsBytes();
-      final info = await ClaudeService.identifyMachine(bytes);
+      final info = await AICoachService.identifyMachine(bytes);
       if (!mounted) return;
       setState(() => _isScanning = false);
       _showMachineSheet(info);
@@ -84,7 +87,10 @@ class _WayfindingScreenState extends State<WayfindingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Scan Machine')),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text('Scan Machine'),
+      ),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -109,16 +115,50 @@ class _WayfindingScreenState extends State<WayfindingScreen> {
               ),
             ),
           CustomPaint(painter: ScannerOverlayPainter(isScanning: _isScanning)),
+          // Top hint
           Positioned(
-            bottom: 40,
-            left: 40,
-            right: 40,
+            top: 16,
+            left: 20,
+            right: 20,
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.55),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                    color: AppTheme.neonLime.withValues(alpha: 0.4)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.center_focus_strong_rounded,
+                      color: AppTheme.neonLime, size: 18),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Point at any gym machine. We\'ll tell you what it is and how to use it.',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Bottom area: status + giant capture button
+          Positioned(
+            bottom: 24,
+            left: 0,
+            right: 0,
             child: Column(
               children: [
                 if (_isScanning)
                   Container(
                     margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.black87,
                       borderRadius: BorderRadius.circular(20),
@@ -129,49 +169,110 @@ class _WayfindingScreenState extends State<WayfindingScreen> {
                         SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.neonCyan),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: AppTheme.neonCyan),
                         ),
                         SizedBox(width: 10),
                         Text(
-                          'Analyzing with AI...',
-                          style: TextStyle(color: AppTheme.neonCyan, fontSize: 13, fontWeight: FontWeight.bold),
+                          'Analyzing…',
+                          style: TextStyle(
+                              color: AppTheme.neonCyan,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                   ),
                 if (_errorMessage != null && !_isScanning)
                   Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 24)
+                            .copyWith(bottom: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.red.shade900.withOpacity(0.85),
+                      color: AppTheme.accentRed.withValues(alpha: 0.85),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       _errorMessage!,
-                      style: const TextStyle(color: Colors.white, fontSize: 13),
+                      style: const TextStyle(
+                          color: Colors.white, fontSize: 13),
                       textAlign: TextAlign.center,
                     ),
                   ),
-                ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _isScanning ? AppTheme.cardBg : AppTheme.neonLime,
-                    foregroundColor: _isScanning ? AppTheme.textSecondary : AppTheme.darkBackground,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    elevation: 4,
-                  ),
-                  icon: const Icon(Icons.camera_alt),
-                  label: Text(
-                    _isScanning ? 'IDENTIFYING...' : 'SCAN MACHINE',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 0.5),
-                  ),
-                  onPressed: _isScanning ? null : _scan,
+                _CaptureButton(
+                  busy: _isScanning,
+                  onTap: _isScanning ? null : _scan,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Tap to scan',
+                  style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Large prominent capture button styled like a camera shutter.
+class _CaptureButton extends StatelessWidget {
+  final bool busy;
+  final VoidCallback? onTap;
+  const _CaptureButton({required this.busy, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 84,
+        height: 84,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black.withValues(alpha: 0.3),
+          border: Border.all(
+            color: busy
+                ? AppTheme.neonCyan
+                : AppTheme.neonLime.withValues(alpha: 0.9),
+            width: 4,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.neonLime.withValues(alpha: 0.35),
+              blurRadius: 20,
+              spreadRadius: -2,
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: busy ? AppTheme.cardBg : AppTheme.neonLime,
+            ),
+            child: busy
+                ? const Center(
+                    child: SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: AppTheme.neonCyan),
+                    ),
+                  )
+                : const Icon(Icons.camera_alt_rounded,
+                    color: AppTheme.darkBackground, size: 28),
+          ),
+        ),
       ),
     );
   }
@@ -196,7 +297,7 @@ class _MachineChatSheetState extends State<MachineChatSheet> {
 
   ScrollController? _scrollController;
 
-  final List<ClaudeMessage> _history = [];
+  final List<AIMessage> _history = [];
   final List<_ChatMsg> _display = [];
 
   bool _sttAvailable = false;
@@ -232,7 +333,7 @@ class _MachineChatSheetState extends State<MachineChatSheet> {
 
     setState(() {
       _display.add((role: 'assistant', text: welcome));
-      _history.add(ClaudeMessage(role: 'assistant', content: welcome));
+      _history.add(AIMessage(role: 'assistant', content: welcome));
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _tts.speak(welcome));
@@ -265,7 +366,7 @@ class _MachineChatSheetState extends State<MachineChatSheet> {
     _textController.clear();
 
     setState(() {
-      _history.add(ClaudeMessage(role: 'user', content: trimmed));
+      _history.add(AIMessage(role: 'user', content: trimmed));
       _display.add((role: 'user', text: trimmed));
       _isThinking = true;
       _interim = '';
@@ -278,10 +379,10 @@ class _MachineChatSheetState extends State<MachineChatSheet> {
           '(targets: ${m.muscles}; suggested starting weight: ${m.startingWeight}). '
           'Keep answers to 2-3 sentences — they will be spoken aloud. Be encouraging and specific.';
 
-      final reply = await ClaudeService.chat(_history, system);
+      final reply = await AICoachService.chat(_history, system);
 
       setState(() {
-        _history.add(ClaudeMessage(role: 'assistant', content: reply));
+        _history.add(AIMessage(role: 'assistant', content: reply));
         _display.add((role: 'assistant', text: reply));
         _isThinking = false;
       });
@@ -382,6 +483,8 @@ class _MachineChatSheetState extends State<MachineChatSheet> {
 
   Widget _buildMachineHeader() {
     final m = widget.machine;
+    final query =
+        m.demoQuery.isNotEmpty ? m.demoQuery : '${m.name} proper form beginner';
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: Column(
@@ -390,40 +493,113 @@ class _MachineChatSheetState extends State<MachineChatSheet> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: AppTheme.neonCyan.withOpacity(0.15),
+              color: AppTheme.neonCyan.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Text(
               'MACHINE IDENTIFIED',
-              style: TextStyle(color: AppTheme.neonCyan, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+              style: TextStyle(
+                  color: AppTheme.neonCyan,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5),
             ),
           ),
           const SizedBox(height: 10),
-          Text(m.name, style: const TextStyle(color: AppTheme.textPrimary, fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(m.name,
+              style: const TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold)),
           const SizedBox(height: 2),
-          Text(m.muscles, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-          const SizedBox(height: 4),
+          Text(m.muscles,
+              style: const TextStyle(
+                  color: AppTheme.textSecondary, fontSize: 13)),
+          const SizedBox(height: 6),
           Row(
             children: [
-              const Icon(Icons.fitness_center, color: AppTheme.neonLime, size: 14),
+              const Icon(Icons.fitness_center,
+                  color: AppTheme.neonLime, size: 14),
               const SizedBox(width: 4),
-              Text(
-                'Start: ${m.startingWeight}',
-                style: const TextStyle(color: AppTheme.neonLime, fontSize: 13, fontWeight: FontWeight.w500),
-              ),
+              Text('Start: ${m.startingWeight}',
+                  style: const TextStyle(
+                      color: AppTheme.neonLime,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500)),
             ],
           ),
           const SizedBox(height: 16),
+          _DemoButtons(query: query),
+          const SizedBox(height: 18),
           const Text(
             'Setup',
-            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+            style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5),
           ),
           const SizedBox(height: 8),
-          ...m.steps.asMap().entries.map((e) => _buildStep('${e.key + 1}', e.value)),
-          const Divider(color: Colors.white12, height: 28),
+          ...m.steps
+              .asMap()
+              .entries
+              .map((e) => _buildStep('${e.key + 1}', e.value)),
+          if (m.commonMistakes.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            const Text(
+              'Watch out for',
+              style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5),
+            ),
+            const SizedBox(height: 8),
+            ...m.commonMistakes.map((mistake) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 3),
+                        child: Icon(Icons.warning_amber_rounded,
+                            color: AppTheme.accentAmber, size: 14),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          mistake,
+                          style: const TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontSize: 13,
+                              height: 1.45),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+          ],
+          const SizedBox(height: 16),
+          TrainerNetworkCard(
+            compact: true,
+            title: 'Want a trainer to walk you through?',
+            description:
+                'A vetted coach can write a 2-minute setup brief for ${m.name} — under 24 hours.',
+            ctaLabel: 'Ask a human · \$9',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (_) => const TrainerNetworkScreen()),
+            ),
+          ),
+          const Divider(color: AppTheme.hairline, height: 32),
           const Text(
             'AI COACH',
-            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+            style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5),
           ),
           const SizedBox(height: 10),
         ],
@@ -633,4 +809,134 @@ class ScannerOverlayPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant ScannerOverlayPainter old) => old.isScanning != isScanning;
+}
+
+// ─── Visual demo buttons ──────────────────────────────────────────────────────
+
+class _DemoButtons extends StatelessWidget {
+  final String query;
+  const _DemoButtons({required this.query});
+
+  Future<void> _open(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  String get _youtubeUrl =>
+      'https://www.youtube.com/results?search_query=${Uri.encodeQueryComponent(query)}';
+  String get _imagesUrl =>
+      'https://www.google.com/search?tbm=isch&q=${Uri.encodeQueryComponent(query)}';
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'See it in action',
+          style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: _DemoTile(
+                icon: Icons.play_circle_fill_rounded,
+                color: AppTheme.accentRed,
+                title: 'Watch demo video',
+                subtitle: 'Curated YouTube results',
+                onTap: () => _open(_youtubeUrl),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _DemoTile(
+                icon: Icons.photo_library_rounded,
+                color: AppTheme.neonCyan,
+                title: 'Form pictures',
+                subtitle: 'Reference images',
+                onTap: () => _open(_imagesUrl),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _DemoTile extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  const _DemoTile({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppTheme.cardBg,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: color.withValues(alpha: 0.35)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 18),
+              ),
+              const SizedBox(height: 10),
+              Text(title,
+                  style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700)),
+              const SizedBox(height: 2),
+              Text(subtitle,
+                  style: const TextStyle(
+                      color: AppTheme.textSecondary, fontSize: 11)),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Text('Open',
+                      style: TextStyle(
+                          color: color,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700)),
+                  const SizedBox(width: 2),
+                  Icon(Icons.arrow_forward_rounded, size: 12, color: color),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
