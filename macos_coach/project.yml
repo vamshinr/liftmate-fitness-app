@@ -1,0 +1,40 @@
+name: LiftMateCoach
+options:
+  bundleIdPrefix: app.liftmate
+  deploymentTarget:
+    macOS: "14.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    DEVELOPMENT_TEAM: ""
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_STYLE: Automatic
+    GENERATE_INFOPLIST_FILE: NO
+    INFOPLIST_FILE: Resources/Info.plist
+targets:
+  LiftMateCoach:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/LiftMateCoach
+    resources:
+      - Resources/Assets.xcassets
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName: LiftMate Coach
+        CFBundleDisplayName: LiftMate Coach
+        CFBundleIdentifier: app.liftmate.coach
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        LSMinimumSystemVersion: "14.0"
+        NSCameraUsageDescription: "LiftMate Coach uses the camera to detect your body pose and coach your lifts in real time. No video is recorded or sent anywhere."
+        NSMicrophoneUsageDescription: "Not used."
+        NSHighResolutionCapable: YES
+    entitlements:
+      path: Resources/LiftMateCoach.entitlements
+      properties:
+        com.apple.security.app-sandbox: YES
+        com.apple.security.device.camera: YES
+        com.apple.security.device.audio-input: NO
+        com.apple.security.network.client: NO

@@ -1,0 +1,371 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0B30A5471C827C0A277D7357 /* CenteredOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E01C79EC5521F702380AE2 /* CenteredOverlay.swift */; };
+		2EBDE585FF136789A1A0E808 /* SkeletonOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86C027E6D8EDF1CA75B7C6EB /* SkeletonOverlay.swift */; };
+		5DDBFA73CF18CB910629A14B /* CameraService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAF51F60D95C5EC0701A1029 /* CameraService.swift */; };
+		71022EDDB09F4092A385780A /* LiftMateCoachApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2780F55869A2A081E3EEDD /* LiftMateCoachApp.swift */; };
+		749F0939C1694F584D0A27E1 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C482B4545AD2341760EB4ACA /* CameraPreview.swift */; };
+		777B081EB6763B958D4FE0A6 /* BiomechRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53903B23EADDAD4B4F8D087E /* BiomechRules.swift */; };
+		94A8E326A7A6AB25082796D2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1268FC8C15E255B48242C5A8 /* ContentView.swift */; };
+		AEB0C589C2D001D10EC97057 /* HUDBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16DF9321DC9AB84DD7BAA6 /* HUDBar.swift */; };
+		BAE67FA03C7BB966045DC371 /* ScoreBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770E808FB9E2BA45687AEE44 /* ScoreBar.swift */; };
+		C23094E462FBECAF772BC69F /* VoiceCoach.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38CF25F8814082DC252A5F40 /* VoiceCoach.swift */; };
+		DA3D8A0DC36B77008377D099 /* PoseEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD118395723C78C86D89F55 /* PoseEngine.swift */; };
+		E26351E2EA9A313254207E05 /* CoachViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC4D7557BF363632E1DCF2D5 /* CoachViewModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		02E01C79EC5521F702380AE2 /* CenteredOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenteredOverlay.swift; sourceTree = "<group>"; };
+		1268FC8C15E255B48242C5A8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		38CF25F8814082DC252A5F40 /* VoiceCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceCoach.swift; sourceTree = "<group>"; };
+		3FD118395723C78C86D89F55 /* PoseEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseEngine.swift; sourceTree = "<group>"; };
+		4E2780F55869A2A081E3EEDD /* LiftMateCoachApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftMateCoachApp.swift; sourceTree = "<group>"; };
+		53903B23EADDAD4B4F8D087E /* BiomechRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiomechRules.swift; sourceTree = "<group>"; };
+		770E808FB9E2BA45687AEE44 /* ScoreBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreBar.swift; sourceTree = "<group>"; };
+		86C027E6D8EDF1CA75B7C6EB /* SkeletonOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonOverlay.swift; sourceTree = "<group>"; };
+		9B51384AD4AEE0C39E06E459 /* LiftMateCoach.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiftMateCoach.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA16DF9321DC9AB84DD7BAA6 /* HUDBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDBar.swift; sourceTree = "<group>"; };
+		BC4D7557BF363632E1DCF2D5 /* CoachViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachViewModel.swift; sourceTree = "<group>"; };
+		C482B4545AD2341760EB4ACA /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
+		CAF51F60D95C5EC0701A1029 /* CameraService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0E6818C7F84635327FD222AF /* Pose */ = {
+			isa = PBXGroup;
+			children = (
+				53903B23EADDAD4B4F8D087E /* BiomechRules.swift */,
+				3FD118395723C78C86D89F55 /* PoseEngine.swift */,
+			);
+			path = Pose;
+			sourceTree = "<group>";
+		};
+		28579D186157B8EC1F172200 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9B51384AD4AEE0C39E06E459 /* LiftMateCoach.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2FB675D63EFA947E711D6930 /* Coach */ = {
+			isa = PBXGroup;
+			children = (
+				BC4D7557BF363632E1DCF2D5 /* CoachViewModel.swift */,
+				38CF25F8814082DC252A5F40 /* VoiceCoach.swift */,
+			);
+			path = Coach;
+			sourceTree = "<group>";
+		};
+		3288C54ADEDF890AF049EDD4 = {
+			isa = PBXGroup;
+			children = (
+				AF9C2B25D14FDCFD85F045DF /* LiftMateCoach */,
+				28579D186157B8EC1F172200 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6E6B73B9D67FB899EB4434F7 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				CAF51F60D95C5EC0701A1029 /* CameraService.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		AF9C2B25D14FDCFD85F045DF /* LiftMateCoach */ = {
+			isa = PBXGroup;
+			children = (
+				1268FC8C15E255B48242C5A8 /* ContentView.swift */,
+				4E2780F55869A2A081E3EEDD /* LiftMateCoachApp.swift */,
+				6E6B73B9D67FB899EB4434F7 /* Camera */,
+				2FB675D63EFA947E711D6930 /* Coach */,
+				0E6818C7F84635327FD222AF /* Pose */,
+				F091B7205B69F9F4B52AB8C2 /* UI */,
+			);
+			name = LiftMateCoach;
+			path = Sources/LiftMateCoach;
+			sourceTree = "<group>";
+		};
+		F091B7205B69F9F4B52AB8C2 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				C482B4545AD2341760EB4ACA /* CameraPreview.swift */,
+				02E01C79EC5521F702380AE2 /* CenteredOverlay.swift */,
+				AA16DF9321DC9AB84DD7BAA6 /* HUDBar.swift */,
+				770E808FB9E2BA45687AEE44 /* ScoreBar.swift */,
+				86C027E6D8EDF1CA75B7C6EB /* SkeletonOverlay.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CC2170C920942186D4D378F5 /* LiftMateCoach */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 088B041AC52270FE9D70B545 /* Build configuration list for PBXNativeTarget "LiftMateCoach" */;
+			buildPhases = (
+				96B4F5D1F766EBC20D5E5DDF /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LiftMateCoach;
+			packageProductDependencies = (
+			);
+			productName = LiftMateCoach;
+			productReference = 9B51384AD4AEE0C39E06E459 /* LiftMateCoach.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D0DDCFBAF883317BCF25019E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					CC2170C920942186D4D378F5 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = FDF84470A066DA0006F1002E /* Build configuration list for PBXProject "LiftMateCoach" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 3288C54ADEDF890AF049EDD4;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 28579D186157B8EC1F172200 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CC2170C920942186D4D378F5 /* LiftMateCoach */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		96B4F5D1F766EBC20D5E5DDF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				777B081EB6763B958D4FE0A6 /* BiomechRules.swift in Sources */,
+				749F0939C1694F584D0A27E1 /* CameraPreview.swift in Sources */,
+				5DDBFA73CF18CB910629A14B /* CameraService.swift in Sources */,
+				0B30A5471C827C0A277D7357 /* CenteredOverlay.swift in Sources */,
+				E26351E2EA9A313254207E05 /* CoachViewModel.swift in Sources */,
+				94A8E326A7A6AB25082796D2 /* ContentView.swift in Sources */,
+				AEB0C589C2D001D10EC97057 /* HUDBar.swift in Sources */,
+				71022EDDB09F4092A385780A /* LiftMateCoachApp.swift in Sources */,
+				DA3D8A0DC36B77008377D099 /* PoseEngine.swift in Sources */,
+				BAE67FA03C7BB966045DC371 /* ScoreBar.swift in Sources */,
+				2EBDE585FF136789A1A0E808 /* SkeletonOverlay.swift in Sources */,
+				C23094E462FBECAF772BC69F /* VoiceCoach.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3E9C45D4A0527EEA01182D6C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Resources/LiftMateCoach.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.liftmate.LiftMateCoach;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		57DAD0E831949A98F9858051 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Resources/LiftMateCoach.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.liftmate.LiftMateCoach;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		8A18A841E0EE6C4D78B903EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+		E9F33493A0CA3D395ABA660B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		088B041AC52270FE9D70B545 /* Build configuration list for PBXNativeTarget "LiftMateCoach" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E9C45D4A0527EEA01182D6C /* Debug */,
+				57DAD0E831949A98F9858051 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FDF84470A066DA0006F1002E /* Build configuration list for PBXProject "LiftMateCoach" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E9F33493A0CA3D395ABA660B /* Debug */,
+				8A18A841E0EE6C4D78B903EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D0DDCFBAF883317BCF25019E /* Project object */;
+}
